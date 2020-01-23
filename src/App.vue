@@ -1,38 +1,54 @@
 <template>
-  <v-app>
+  <v-app id="inspire">
+    <v-navigation-drawer
+      v-model="drawer"
+      app
+    >
+      <v-list dense>
+        <v-list-item link>
+          <v-list-item-action>
+            <v-icon>mdi-home</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Home</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item link>
+          <v-list-item-action>
+            <v-icon>mdi-contact-mail</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Contact</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
     <v-app-bar
       app
-      color="primary"
+      color="#34403F"
       dark
     >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
-      <v-spacer></v-spacer>
-
-      
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+      <v-toolbar-title>Application</v-toolbar-title>
     </v-app-bar>
 
     <v-content>
-      <router-view/>
+      <v-container
+        class="fill-height"
+        fluid
+      >
+      
+      <router-view />
+
+      </v-container>
     </v-content>
+    <v-footer
+      color="#34403F"
+      app
+    >
+      <span class="white--text">&copy; 2020 Murilo Fernandes Melo <a href="mailto:murilofm2010@gmail.com" target="_top">murilofm2010@gmail.com</a></span>
+    </v-footer>
   </v-app>
 </template>
 
@@ -47,7 +63,7 @@ export default {
   },
 
   data: () => ({
-    //
+    drawer: null,
   }),
 };
 </script>
