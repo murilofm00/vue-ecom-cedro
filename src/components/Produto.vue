@@ -17,13 +17,11 @@
     </v-card-text>
 
     <v-card-actions>
-      <v-btn color="orange" text @click="editar = true">Share</v-btn>
+      <Modal tipo="edit"/>
 
-      <v-btn color="orange" text>Explore</v-btn>
+      <Modal tipo="delete"/>
     </v-card-actions>
   </v-card>
-  
-<Modal :dialog="editar"/>
 </div>
 </template>
 
