@@ -26,16 +26,15 @@
 
     <v-app-bar
       app
-      color="#34403F"
+      color="primary"
       dark
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>Application</v-toolbar-title>
+      <v-toolbar-title>Cedro</v-toolbar-title>
     </v-app-bar>
 
     <v-content>
       <v-container
-        class="fill-height"
         fluid
       >
       
@@ -44,7 +43,7 @@
       </v-container>
     </v-content>
     <v-footer
-      color="#34403F"
+      color="primary"
       app
     >
       <span class="white--text">&copy; 2020 Murilo Fernandes Melo <a href="mailto:murilofm2010@gmail.com" target="_top">murilofm2010@gmail.com</a></span>

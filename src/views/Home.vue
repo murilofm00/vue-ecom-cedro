@@ -1,18 +1,28 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <v-col>
+      <Produto nome="Teste" />
+    </v-col>
+    <Modal />
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+
+import Produto from "@/components/Produto.vue";
+import Modal from '@/components/Modal.vue'
 
 export default {
-  name: 'home',
+  name: "home",
   components: {
-    HelloWorld
+    Produto,
+    Modal
+  },
+  computed: {
+    produtos() {
+      return this.$firebase;
+    }
   }
-}
+};
 </script>
