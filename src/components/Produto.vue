@@ -1,25 +1,22 @@
 <template>
 <div class="produto">
-  <v-card max-width="300">
+  <v-card width="300">
     <v-img
-      class="white--text align-center"
-      height="180px"
-      src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+      aspect-ratio="1.5" contain
+      :src="produto.imagem"
     ></v-img>
 
-    <v-card-title class="headline">{{ nome }}</v-card-title>
-    <v-card-subtitle class="headline">R$ {{ preco }}</v-card-subtitle>
+    <v-card-title class="headline">{{ produto.produto }}</v-card-title>
+    <v-card-subtitle class="headline">R$ {{ produto.preco }}</v-card-subtitle>
 
     <v-card-text class="text--primary">
-      <div>Whitehaven Beach</div>
-
-      <div>Whitsunday Island, Whitsunday Islands</div>
+      <div>{{ produto.descricao}}</div>
     </v-card-text>
 
     <v-card-actions>
-      <Modal tipo="edit"/>
+      <Modal tipo="edit" :produto="produto" :id="id"/>
 
-      <Modal tipo="delete"/>
+      <Modal tipo="delete" :produto="produto" :id="id"/>
     </v-card-actions>
   </v-card>
 </div>
@@ -39,21 +36,13 @@ export default {
     }
   },
   props: {
-    nome: {
-      type: String,
-      default: 'Produto'
+    produto: {
+      type: Object,
+      required: true
     },
-    imagem: {
+    id: {
       type: String,
-      default: 'aaa'
-    },
-    preco: {
-      type: Number,
-      default: 0
-    },
-    descricao: {
-      type: String,
-      default: 'descrição'
+      required: true
     }
   }
 };

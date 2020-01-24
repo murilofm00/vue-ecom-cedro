@@ -8,7 +8,7 @@
         <v-btn v-else-if="tipo === 'delete'" icon color="red" dark v-on="on">
           <v-icon>mdi-delete</v-icon>
         </v-btn>
-        <v-btn v-else color="secondary" absolute dark fab right v-on="on" style="bottom: 10px;">
+        <v-btn v-else color="secondary" fixed dark fab right v-on="on" style="bottom: 65px;">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </template>
@@ -20,7 +20,7 @@
           <v-spacer />
           <v-tooltip right>
             <template v-slot:activator="{ on }">
-              <v-btn icon large v-on="on" @click="dialog = false">
+              <v-btn icon large v-on="on" @click="close()">
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </template>
@@ -33,41 +33,45 @@
               <v-row align="center">
                 <v-col>
                   <v-avatar tile size="200">
-                    <v-img
-                      class="white--text align-center"
-                      height="200px"
-                      src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
-                    ></v-img>
+                    <v-img class="white--text align-center" height="200px" :src="img"></v-img>
                   </v-avatar>
                 </v-col>
                 <v-col cols="8">
                   <p class>Deseja remover o seguinte produto?</p>
                   <div class="produto">
-                    <b>Teste</b>
+                    <b>{{ produto.produto }}</b>
                   </div>
                 </v-col>
               </v-row>
+              <v-spacer />
+              <v-btn color="red" @click="remover">
+                <v-icon>mdi-content-save</v-icon>Remover
+              </v-btn>
             </template>
             <template v-else>
-              <v-img
-                v-if="tipo === 'edit'"
-                class="white--text align-center"
-                height="200px"
-                src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
-              ></v-img>
-              <img v-if="imgPreview" :src="imgPreview" alt />
+              <v-img v-if="img" max-height="300px" contain :src="img"></v-img>
               <v-form ref="form" v-model="valid" lazy-validation>
                 <v-file-input
+                  v-if="tipo === 'edit'"
                   accept="image/png, image/jpeg, image/bmp"
-                  placeholder="Pick an avatar"
+                  placeholder="Selecione uma imagem"
                   prepend-icon="mdi-camera"
-                  label="Avatar"
+                  label="Imagem"
+                  v-model="nImagem"
+                  @change="convertBase64"
+                ></v-file-input>
+                <v-file-input
+                  v-else
+                  accept="image/png, image/jpeg, image/bmp"
+                  placeholder="Selecione uma imagem"
+                  prepend-icon="mdi-camera"
+                  label="Imagem"
                   v-model="nImagem"
                   @change="convertBase64"
                   :rules="[v => !!v || 'Adicione uma imagem!']"
                 ></v-file-input>
                 <v-text-field
-                  v-model="produto"
+                  v-model="nProduto"
                   :rules="[v => !!v || 'Digite o nome do produto!']"
                   label="Produto"
                   required
@@ -75,50 +79,30 @@
                 <v-textarea v-model="nDescricao" label="Descrição" required></v-textarea>
                 <v-text-field v-model="nPreco" type="number" label="Preco" required></v-text-field>
 
-                <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">Validate</v-btn>
-
-                <v-btn color="error" class="mr-4" @click="reset">Reset Form</v-btn>
-
-                <v-btn color="warning" @click="resetValidation">Reset Validation</v-btn>
+                <v-btn :disabled="!valid" @click="validate" color="secondary">
+                  <v-icon>mdi-content-save</v-icon>Salvar
+                </v-btn>
               </v-form>
             </template>
           </v-container>
         </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <template v-if="tipo === 'delete'">
-            <v-btn color="red">
-              <v-icon>mdi-content-save</v-icon>Remover
-            </v-btn>
-          </template>
-          <v-btn v-else color="secondary">
-            <v-icon>mdi-content-save</v-icon>Salvar
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-row>
 </template>
 
 <script>
-import firebase from 'firebase';
-let db = firebase.database();
+import * as firebase from "firebase/app";
+import "firebase/database";
 export default {
   props: {
-    nome: {
+    produto: {
+      type: Object,
+      default: null
+    },
+    id: {
       type: String,
-      default: ""
-    },
-    imagem: {
-      type: String
-    },
-    preco: {
-      type: Number,
-      default: 0.0
-    },
-    descricao: {
-      type: String,
-      default: ""
+      default: null
     },
     tipo: {
       type: String,
@@ -129,35 +113,80 @@ export default {
     return {
       dialog: false,
       valid: true,
-      produto: "",
-      nDescricao: this.descricao,
-      nPreco: this.preco,
+      nProduto: "",
+      nDescricao: "",
+      nPreco: "",
       nImagem: null,
-      imgPreview: ""
+      img: ""
     };
+  },
+  created() {
+    if (this.produto) {
+      this.nProduto = this.produto.produto;
+      this.nDescricao = this.produto.descricao;
+      this.nPreco = this.produto.preco;
+      this.img = this.produto.imagem;
+    }
   },
   methods: {
     convertBase64(file) {
       let reader = new FileReader();
 
-      reader.onloadend = function() {
-        this.imgPreview = reader.result;
-        console.log(this.imgPreview);
+      reader.onloadend = data => {
+        this.img = data.target.result;
       };
-      reader.readAsDataURL(file);
+      if (file) {
+        reader.readAsDataURL(file);
+      } else {
+        if (this.tipo === "edit") {
+          this.img = this.produto.imagem;
+        } else {
+          this.img = null;
+        }
+      }
     },
     validate() {
       if (this.$refs.form.validate()) {
-        db.ref("produtos/").set({
+        this.enviar();
+      }
+    },
+    enviar() {
+      let key;
+      if (this.tipo === "new") {
+        key = firebase
+          .database()
+          .ref("produtos/")
+          .push().key;
+      } else {
+        key = this.id;
+      }
+      firebase
+        .database()
+        .ref("produtos/")
+        .child(key)
+        .set({
           produto: this.nProduto,
           descricao: this.nDescricao,
           preco: this.nPreco,
-          imagem: this.imgPreview
+          imagem: this.img
+        })
+        .then(sucess => {
+          console.log(sucess);
         });
-      }
+      this.close();
     },
-    reset() {
-      this.$refs.form.reset();
+    remover() {
+      firebase
+        .database()
+        .ref("produtos/")
+        .child(this.id)
+        .remove()
+    },
+    close() {
+      if (this.tipo != "delete") {
+        this.$refs.form.reset();
+      }
+      this.dialog = false;
     },
     resetValidation() {
       this.$refs.form.resetValidation();
