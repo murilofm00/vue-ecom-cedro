@@ -74,15 +74,18 @@ export default {
   },
   methods: {
     login() {
+      console.log("Login", this.email, this.senha);
       if (this.email && this.senha) {
         firebase
           .auth()
           .signInWithEmailAndPassword(this.email, this.senha)
           .then(
             sucess => {
+              console.log(sucess);
               this.$router.push("/");
             },
             error => {
+              console.log(error);
               this.erro = true;
             }
           );
@@ -93,6 +96,7 @@ export default {
         .auth()
         .signOut()
         .then(() => {
+          console.log("deslogado")
           this.$store.commit('logout');
         })
     }
