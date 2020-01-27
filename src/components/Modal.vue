@@ -177,9 +177,6 @@ export default {
           preco: this.nPreco,
           imagem: this.img
         })
-        .then(sucess => {
-          console.log(sucess);
-        });
       this.close();
     },
     remover() {

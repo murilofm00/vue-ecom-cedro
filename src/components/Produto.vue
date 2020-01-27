@@ -1,6 +1,6 @@
 <template>
   <div class="produto">
-    <v-card width="300" :class="[{accent: produto.comprado}]">
+    <v-card width="300" :class="[{accent: (produto.comprado && usuario)}]">
       <v-img aspect-ratio="1.5" contain :src="produto.imagem"></v-img>
 
       <v-card-title class="headline">{{ produto.produto }}</v-card-title>
@@ -60,15 +60,7 @@ export default {
         .child(this.id)
         .update({
           comprado: true
-        })
-        .then(
-          sucess => {
-            console.log(sucess);
-          },
-          error => {
-            console.log(error);
-          }
-        );
+        });
     }
   }
 };
