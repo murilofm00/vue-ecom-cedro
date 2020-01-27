@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="dialog" persistent max-width="800" v-if="logado">
+    <v-dialog v-model="dialog" persistent max-width="800" v-if="usuario">
       <template v-slot:activator="{ on }">
         <v-btn v-if="tipo === 'edit'" icon color="orange" dark v-on="on">
           <v-icon>mdi-pencil</v-icon>
@@ -109,6 +109,7 @@ export default {
       default: "new"
     }
   },
+  
   data() {
     return {
       dialog: false,
@@ -129,7 +130,8 @@ export default {
     }
   },
   computed: {
-    logado() {
+    usuario() {
+      this.$store.dispatch('verificarLogin');
       return this.$store.state.logado;
     }
   },
@@ -169,7 +171,7 @@ export default {
         .database()
         .ref("produtos/")
         .child(key)
-        .set({
+        .update({
           produto: this.nProduto,
           descricao: this.nDescricao,
           preco: this.nPreco,
@@ -188,7 +190,7 @@ export default {
         .remove();
     },
     close() {
-      if (this.tipo != "delete") {
+      if (this.tipo == 'new') {
         this.$refs.form.reset();
         this.$refs.form.resetValidation();
       }

@@ -31,7 +31,6 @@ export default {
   created() {
     let produtos = firebase.database().ref("produtos/");
     produtos.on("value", snap => {
-      console.log(snap.val());
       this.produtos = snap.val();
     });
     

@@ -45,21 +45,11 @@
 </template>
 
 <script>
-import * as firebase from "firebase/app";
-import "firebase/auth";
 
 export default {
   name: "App",
 
   components: {},
-  created() {
-    if (!this.$store.state.logado) {
-      var usuario = firebase.auth().currentUser;
-      if (usuario) {
-        this.$store.commit("login", usuario.uid);
-      }
-    }
-  },
   data: () => ({
     drawer: null
   })

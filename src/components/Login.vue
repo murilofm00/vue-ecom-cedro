@@ -9,8 +9,8 @@
                 <v-toolbar-title>Login</v-toolbar-title>
               </v-toolbar>
               <v-card-text>
-                <template v-if="logado">
-                    <div class="center">Você já está logado</div>
+                <template v-if="usuario">
+                  <div class="center">Você já está logado</div>
                 </template>
 
                 <v-form v-else v-model="valid" lazy-validation>
@@ -36,11 +36,10 @@
                   <div class="mb-4 red--text" v-if="erro">{{ this.erroMsg }}</div>
                 </v-form>
               </v-card-text>
-              <v-card-actions >
+              <v-card-actions>
                 <v-spacer />
-                <v-btn v-if="logado" @click="logout">Desconectar</v-btn>
+                <v-btn v-if="usuario" @click="logout">Desconectar</v-btn>
                 <v-btn v-else :disabled="!valid" color="secondary" @click="login">Login</v-btn>
-                
               </v-card-actions>
             </v-card>
           </v-col>
@@ -68,7 +67,8 @@ export default {
     };
   },
   computed: {
-    logado() {
+    usuario() {
+      this.$store.dispatch('verificarLogin');
       return this.$store.state.logado;
     }
   },
@@ -82,22 +82,23 @@ export default {
           .then(
             sucess => {
               console.log(sucess);
-              this.$store.commit("login", sucess.user.uid);
               this.$router.push("/");
             },
             error => {
               console.log(error);
-              this.erroMsg = error.message;
               this.erro = true;
             }
           );
       }
     },
     logout() {
-      firebase.auth().signOut().then(() => {
-        this.$store.commit("logout");
-
-      })
+      firebase
+        .auth()
+        .signOut()
+        .then(() => {
+          console.log("deslogado")
+          this.$store.commit('logout');
+        })
     }
   }
 };
