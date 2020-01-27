@@ -61,14 +61,6 @@ export default {
         .update({
           comprado: true
         })
-        .then(
-          sucess => {
-            console.log(sucess);
-          },
-          error => {
-            console.log(error);
-          }
-        );
     }
   }
 };
