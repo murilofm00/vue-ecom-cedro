@@ -1,68 +1,67 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer
-      v-model="drawer"
-      app
-    >
+    <v-navigation-drawer v-model="drawer" app>
       <v-list dense>
-        <v-list-item link>
+        <v-list-item link to="/">
           <v-list-item-action>
-            <v-icon>mdi-home</v-icon>
+            <v-icon>mdi-store</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Home</v-list-item-title>
+            <v-list-item-title>Loja</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link>
+        <v-list-item link to="/login">
           <v-list-item-action>
-            <v-icon>mdi-contact-mail</v-icon>
+            <v-icon>mdi-login</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Contact</v-list-item-title>
+            <v-list-item-title>Login</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
+    <v-app-bar app color="primary" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title>Cedro</v-toolbar-title>
     </v-app-bar>
 
     <v-content>
-      <v-container
-        fluid
-      >
-      
-      <router-view />
-
+      <v-container fluid>
+        <router-view />
       </v-container>
     </v-content>
-    <v-footer
-      color="primary"
-      app
-    >
-      <span class="white--text">&copy; 2020 Murilo Fernandes Melo <a href="mailto:murilofm2010@gmail.com" target="_top">murilofm2010@gmail.com</a></span>
+    <v-footer color="primary" app>
+      <span class="white--text">
+        &copy; 2020 Murilo Fernandes Melo
+        <a
+          href="mailto:murilofm2010@gmail.com"
+          target="_blank"
+          style="color: white !important;"
+        >murilofm2010@gmail.com</a>
+      </span>
     </v-footer>
   </v-app>
 </template>
 
 <script>
-
+import * as firebase from "firebase/app";
+import "firebase/auth";
 
 export default {
-  name: 'App',
+  name: "App",
 
-  components: {
-    
+  components: {},
+  created() {
+    if (!this.$store.state.logado) {
+      var usuario = firebase.auth().currentUser;
+      if (usuario) {
+        this.$store.commit("login", usuario.uid);
+      }
+    }
   },
-
   data: () => ({
-    drawer: null,
-  }),
+    drawer: null
+  })
 };
 </script>

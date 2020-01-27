@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="dialog" persistent max-width="800">
+    <v-dialog v-model="dialog" persistent max-width="800" v-if="logado">
       <template v-slot:activator="{ on }">
         <v-btn v-if="tipo === 'edit'" icon color="orange" dark v-on="on">
           <v-icon>mdi-pencil</v-icon>
@@ -92,8 +92,8 @@
 </template>
 
 <script>
-import * as firebase from "firebase/app";
-import "firebase/database";
+import * as firebase from "firebase/app"
+import "firebase/database"
 export default {
   props: {
     produto: {
@@ -126,6 +126,11 @@ export default {
       this.nDescricao = this.produto.descricao;
       this.nPreco = this.produto.preco;
       this.img = this.produto.imagem;
+    }
+  },
+  computed: {
+    logado() {
+      return this.$store.state.logado;
     }
   },
   methods: {
@@ -180,16 +185,14 @@ export default {
         .database()
         .ref("produtos/")
         .child(this.id)
-        .remove()
+        .remove();
     },
     close() {
       if (this.tipo != "delete") {
         this.$refs.form.reset();
+        this.$refs.form.resetValidation();
       }
       this.dialog = false;
-    },
-    resetValidation() {
-      this.$refs.form.resetValidation();
     }
   }
 };

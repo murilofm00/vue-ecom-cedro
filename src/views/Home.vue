@@ -34,6 +34,7 @@ export default {
       console.log(snap.val());
       this.produtos = snap.val();
     });
+    
   }
 };
 </script>

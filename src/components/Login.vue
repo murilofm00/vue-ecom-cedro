@@ -1,77 +1,46 @@
 <template>
   <v-app id="inspire">
     <v-content>
-      <v-container
-        class="fill-height"
-        fluid
-      >
-        <v-row
-          align="center"
-          justify="center"
-        >
-          <v-col
-            cols="12"
-            sm="8"
-            md="4"
-          >
+      <v-container class="fill-height" fluid>
+        <v-row align="center" justify="center">
+          <v-col cols="12" sm="8" md="4">
             <v-card class="elevation-12">
-              <v-toolbar
-                color="primary"
-                dark
-                flat
-              >
-                <v-toolbar-title>Login form</v-toolbar-title>
-                <v-spacer />
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      :href="source"
-                      icon
-                      large
-                      target="_blank"
-                      v-on="on"
-                    >
-                      <v-icon>mdi-code-tags</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Source</span>
-                </v-tooltip>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      icon
-                      large
-                      href="https://codepen.io/johnjleider/pen/pMvGQO"
-                      target="_blank"
-                      v-on="on"
-                    >
-                      <v-icon>mdi-codepen</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Codepen</span>
-                </v-tooltip>
+              <v-toolbar color="primary" dark flat>
+                <v-toolbar-title>Login</v-toolbar-title>
               </v-toolbar>
               <v-card-text>
-                <v-form>
+                <template v-if="logado">
+                    <div class="center">Você já está logado</div>
+                </template>
+
+                <v-form v-else v-model="valid" lazy-validation>
                   <v-text-field
-                    label="Login"
-                    name="login"
-                    prepend-icon="person"
-                    type="text"
-                  />
+                    v-model="email"
+                    :rules="[v => !!v || 'Digite o endereço de e-mail', v => /.+@.+\..+/.test(v) || 'E-mail precisa ser válido', !erro || '']"
+                    label="E-mail"
+                    @click="erro = false"
+                    required
+                  ></v-text-field>
 
                   <v-text-field
-                    id="password"
-                    label="Password"
-                    name="password"
-                    prepend-icon="lock"
-                    type="password"
-                  />
+                    v-model="senha"
+                    :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+                    :rules="[value => !!value || 'Digite a senha.', !erro || '']"
+                    :type="show ? 'text' : 'password'"
+                    label="Senha"
+                    class="input-group--focused"
+                    @click:append="show = !show"
+                    @click="erro = false"
+                    required
+                  ></v-text-field>
+                  <div class="mb-4 red--text" v-if="erro">{{ this.erroMsg }}</div>
                 </v-form>
               </v-card-text>
-              <v-card-actions>
+              <v-card-actions >
                 <v-spacer />
-                <v-btn color="primary">Login</v-btn>
+                <v-btn v-if="logado" @click="logout">Desconectar</v-btn>
+                <v-btn v-else :disabled="!valid" color="secondary" @click="login">Login</v-btn>
+                
               </v-card-actions>
             </v-card>
           </v-col>
@@ -82,9 +51,54 @@
 </template>
 
 <script>
-  export default {
-    props: {
-      source: String,
+import * as firebase from "firebase/app";
+import "firebase/auth";
+export default {
+  props: {
+    source: String
+  },
+  data() {
+    return {
+      show: false,
+      valid: true,
+      email: null,
+      senha: null,
+      erro: false,
+      erroMsg: ""
+    };
+  },
+  computed: {
+    logado() {
+      return this.$store.state.logado;
+    }
+  },
+  methods: {
+    login() {
+      console.log("Login", this.email, this.senha);
+      if (this.email && this.senha) {
+        firebase
+          .auth()
+          .signInWithEmailAndPassword(this.email, this.senha)
+          .then(
+            sucess => {
+              console.log(sucess);
+              this.$store.commit("login", sucess.user.uid);
+              this.$router.push("/");
+            },
+            error => {
+              console.log(error);
+              this.erroMsg = error.message;
+              this.erro = true;
+            }
+          );
+      }
     },
+    logout() {
+      firebase.auth().signOut().then(() => {
+        this.$store.commit("logout");
+
+      })
+    }
   }
+};
 </script>
